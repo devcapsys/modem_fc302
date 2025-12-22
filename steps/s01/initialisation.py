@@ -157,6 +157,25 @@ def init_database_and_checks(log, config: configuration.AppConfig, update_percen
 
     return 0, step_name_id
 
+def init_rs232_dut(config: configuration.AppConfig, step_name_id):
+    # Ensure db is initialized
+    if not hasattr(config, "db") or config.db is None:
+        return 1, "Erreur : config.db n'est pas initialisé."
+    
+    # Initialize RS232 serial connection
+    config.ser_dut = configuration.SerialUsbDut(
+        port=config.configItems.rs232_dut.port,
+        baudrate=int(config.configItems.rs232_dut.baudrate),
+        timeout=1
+    )
+    config.ser_dut.open_with_port(config.ser_dut.port)
+    if not config.ser_dut.is_connected():
+        return_msg = "Impossible de se connecter au DUT en RS232."
+        return 1, return_msg
+
+    return_msg = f"Config RS232 : Port : {config.ser_dut.port} ; Baudrate : {config.ser_dut.baudrate}"
+    return 0, return_msg
+
 def run_step(log, config: configuration.AppConfig, update_percentage=lambda x: None):
     step_name = os.path.splitext(os.path.basename(__file__))[0]
     return_msg = {"step_name": step_name, "infos": []}
@@ -165,8 +184,12 @@ def run_step(log, config: configuration.AppConfig, update_percentage=lambda x: N
     if status != 0:
         return_msg["infos"].append(f"{step_name_id}")
         return status, return_msg
-
-
+    
+    log("Initialisation de la connexion RS232 au DUT...", "cyan")
+    status, msg = init_rs232_dut(config, step_name_id)
+    if status != 0:
+        return status, msg    
+    log(msg, "blue")
 
     return_msg["infos"].append(f"Initialisation OK")
     return 0, return_msg

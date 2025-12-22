@@ -3,15 +3,16 @@ from typing import Optional, Any
 import atexit
 from modules.capsys_mysql_command.capsys_mysql_command import (GenericDatabaseManager, DatabaseConfig) # Custom
 from modules.capsys_wrapper_tm_t20iii.capsys_wrapper_tm_t20III import PrinterDC  # Custom
+from modules.capsys_serial_instrument_manager.capsys_serial_instrument_manager import SerialInstrumentManager  # Custom
 # from modules.capsys_daq_manager.capsys_daq_manager import DAQManager  # Custom
 # from modules.capsys_mcp23017.capsys_mcp23017 import MCP23017  # Custom
 # from modules.capsys_serial_instrument_manager.ka3005p import alimentation_ka3005p  # Custom
 
 # Initialize global variables
 CURRENTH_PATH = os.path.dirname(__file__)
-NAME_GUI = "Template"
-CONFIG_JSON_NAME = "config_template"
-PRODUCT_LIST_ID_DEFAULT = "1"
+NAME_GUI = "FC302"
+CONFIG_JSON_NAME = "config_fc302"
+PRODUCT_LIST_ID_DEFAULT = "10"
 VERSION = "V1.0.0"
 HASH_GIT = "DEBUG" # Will be replaced by the Git hash when compiled with command .\build.bat
 AUTHOR = "Thomas GERARDIN"
@@ -58,11 +59,29 @@ def request_user_input(config, title: str, message: str) -> Optional[str]:
         user_text = input(message + " ")
         return user_text if user_text else None
 
+class SerialUsbDut(SerialInstrumentManager):
+    def __init__(self, port=None, baudrate=115200, timeout=0.3, debug=False):
+        SerialInstrumentManager.__init__(self, port, baudrate, timeout, debug)
+        self._debug_log("DUT initialized")
+
+    def get_valid(self, sn=None) -> bool:
+        # self.send_command("AT+RESET", timeout=1) # Initialize communication
+        idn = self.send_command("AT+RESET\r", timeout=1) # Expecting "OK"
+        if not idn:
+            raise RuntimeError("Failed to get valid IDN response")
+        if idn == "OK":
+            self._debug_log(f"Device IDN: {idn}")
+            return True
+        else:
+            raise RuntimeError(f"Invalid device IDN: {idn}")
+    
+    def send_command_Cr(self, command: str, expected_response: str = "", exact_match: bool = False, timeout: float = 0, read_until: str = "") -> str:
+        return super().send_command(command + "\n", expected_response, exact_match, timeout, read_until)
+    
 class ConfigItems:
     """Container for all configuration items used in the test sequence."""
     key_map = {
-        "MULTIMETRE": "multimeter", # Example
-        # Add other keys and their corresponding ConfigItem attributes as needed
+        "RS232": "rs232_dut",
     }
 
     def init_config_items(self, configJson):
@@ -77,7 +96,8 @@ class ConfigItems:
                 attr_name,
                 ConfigItems.ConfigItem(                
                     key=json_key,
-                    # Add other parameters as needed
+                    port=item.get("port", ""),
+                    baudrate=item.get("baudrate", "")
                 )
             )
 
@@ -86,16 +106,17 @@ class ConfigItems:
         def __init__(
             self,
             key = "",
-            # Add other parameters as needed
+            port: str = "",
+            baudrate: str = "",
         ):
             """Initialize a ConfigItem with optional parameters for test configuration."""
             self.key = key
-            # Add other parameters as needed
+            self.port = port
+            self.baudrate = baudrate
     
     def __init__(self):
         """Initialize all ConfigItem attributes for different test parameters."""
-        self.multimeter = self.ConfigItem() # Example
-        # Add other ConfigItems as needed
+        self.rs232_dut = self.ConfigItem()
 
 class Arg:
     name = NAME_GUI
@@ -129,6 +150,8 @@ class AppConfig:
         self.configItems = ConfigItems()
         self.printer: Optional[PrinterDC] = None
         atexit.register(self.cleanup) # Register cleanup function to be called on exit
+
+        self.ser_dut: Optional[SerialUsbDut] = None
 
     def cleanup(self):
         if self.db:

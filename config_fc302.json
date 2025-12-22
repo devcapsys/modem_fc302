@@ -1,0 +1,21 @@
+
+{
+  "JSON": {
+    "path": "C:\\Users\\tgerardin\\CAPSYS\\DONNEES-TECHNIQUES - Documents\\Outillage\\IG87001\\IG87001-2\\libraries\\FC302_Conf_Reglage_Id_Modulation.json"
+  },
+  "JSON_GRENOBLE_NICE": {
+    "path": "C:\\Users\\tgerardin\\CAPSYS\\DONNEES-TECHNIQUES - Documents\\Outillage\\IG87001\\IG87001-2\\libraries\\FC302_Conf_Grenoble-Nice.json"
+  },
+  "RS232": {
+    "port": "COM26",
+    "baudrate": 9600
+  },
+  "MEASURE_AC_VRMS_1": {
+    "target": [0.141],
+    "tolerance": [0.003]
+  },
+  "MEASURE_AC_VRMS_2": {
+    "target": [0.072],
+    "tolerance": [0.006]
+  }
+}
