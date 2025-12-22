@@ -4,10 +4,8 @@ import atexit
 from modules.capsys_mysql_command.capsys_mysql_command import (GenericDatabaseManager, DatabaseConfig) # Custom
 from modules.capsys_wrapper_tm_t20iii.capsys_wrapper_tm_t20III import PrinterDC  # Custom
 from modules.capsys_serial_instrument_manager.capsys_serial_instrument_manager import SerialInstrumentManager  # Custom
-from modules.capsys_modem_fc302_manager.capsys_modem_fc302_manager import ModemFc302Manager  # Custom
-# from modules.capsys_daq_manager.capsys_daq_manager import DAQManager  # Custom
-# from modules.capsys_mcp23017.capsys_mcp23017 import MCP23017  # Custom
-# from modules.capsys_serial_instrument_manager.ka3005p import alimentation_ka3005p  # Custom
+from modules.capsys_serial_instrument_manager.fc302_friendcom.fc302_friendcom import ModemFc302Manager  # Custom
+from modules.capsys_serial_instrument_manager.ds1104_rigol.ds1104_rigol import Ds1104RigolManager  # Custom
 
 # Initialize global variables
 CURRENTH_PATH = os.path.dirname(__file__)
@@ -153,9 +151,15 @@ class AppConfig:
         atexit.register(self.cleanup) # Register cleanup function to be called on exit
 
         self.modem_fc302_manager: Optional[ModemFc302Manager] = None
-        self.ser_dut: Optional[SerialUsbDut] = None
+        self.oscilloscope_rigol_manager: Optional[Ds1104RigolManager] = None
 
     def cleanup(self):
+        if self.modem_fc302_manager:
+            try:
+                self.modem_fc302_manager.close()
+            except:
+                pass
+            self.modem_fc302_manager = None
         if self.db:
             self.db.disconnect()
             self.db = None
