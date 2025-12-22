@@ -7,6 +7,7 @@ if __name__ == "__main__":
 from datetime import datetime
 import configuration  # Custom
 from modules.capsys_mysql_command.capsys_mysql_command import (GenericDatabaseManager, DatabaseConfig, Operator) # Custom
+from modules.capsys_modem_fc302_manager.capsys_modem_fc302_manager import ModemFc302Manager  # Custom
 from configuration import VERSION, get_project_path
 
 def get_info():
@@ -157,24 +158,21 @@ def init_database_and_checks(log, config: configuration.AppConfig, update_percen
 
     return 0, step_name_id
 
-def init_rs232_dut(config: configuration.AppConfig, step_name_id):
+def init_rs232_dut(config: configuration.AppConfig, step_name_id, log):
     # Ensure db is initialized
     if not hasattr(config, "db") or config.db is None:
         return 1, "Erreur : config.db n'est pas initialisé."
     
-    # Initialize RS232 serial connection
-    config.ser_dut = configuration.SerialUsbDut(
-        port=config.configItems.rs232_dut.port,
-        baudrate=int(config.configItems.rs232_dut.baudrate),
-        timeout=1
-    )
-    config.ser_dut.open_with_port(config.ser_dut.port)
-    if not config.ser_dut.is_connected():
-        return_msg = "Impossible de se connecter au DUT en RS232."
-        return 1, return_msg
+    modem = ModemFc302Manager(port=config.configItems.rs232_dut.port, baudrate=int(config.configItems.rs232_dut.baudrate))
+    device_info = modem.get_device_info()
+    port = modem.port
+    txt = f"Modèle {device_info['Model']} connecté : SN={device_info['SerialNumber']}, Port={port}"
+    
+    cmd = "AT+RESET"
+    response = modem.send_at_command(cmd, expected_response="OK")
+    log(f"\"{cmd}\" envoyé, \"{response}\" reçu", "blue")
 
-    return_msg = f"Config RS232 : Port : {config.ser_dut.port} ; Baudrate : {config.ser_dut.baudrate}"
-    return 0, return_msg
+    return 0, txt
 
 def run_step(log, config: configuration.AppConfig, update_percentage=lambda x: None):
     step_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -186,7 +184,7 @@ def run_step(log, config: configuration.AppConfig, update_percentage=lambda x: N
         return status, return_msg
     
     log("Initialisation de la connexion RS232 au DUT...", "cyan")
-    status, msg = init_rs232_dut(config, step_name_id)
+    status, msg = init_rs232_dut(config, step_name_id, log)
     if status != 0:
         return status, msg    
     log(msg, "blue")
