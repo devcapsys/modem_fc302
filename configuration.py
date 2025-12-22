@@ -4,6 +4,7 @@ import atexit
 from modules.capsys_mysql_command.capsys_mysql_command import (GenericDatabaseManager, DatabaseConfig) # Custom
 from modules.capsys_wrapper_tm_t20iii.capsys_wrapper_tm_t20III import PrinterDC  # Custom
 from modules.capsys_serial_instrument_manager.capsys_serial_instrument_manager import SerialInstrumentManager  # Custom
+from modules.capsys_modem_fc302_manager.capsys_modem_fc302_manager import ModemFc302Manager  # Custom
 # from modules.capsys_daq_manager.capsys_daq_manager import DAQManager  # Custom
 # from modules.capsys_mcp23017.capsys_mcp23017 import MCP23017  # Custom
 # from modules.capsys_serial_instrument_manager.ka3005p import alimentation_ka3005p  # Custom
@@ -151,6 +152,7 @@ class AppConfig:
         self.printer: Optional[PrinterDC] = None
         atexit.register(self.cleanup) # Register cleanup function to be called on exit
 
+        self.modem_fc302_manager: Optional[ModemFc302Manager] = None
         self.ser_dut: Optional[SerialUsbDut] = None
 
     def cleanup(self):
