@@ -757,7 +757,9 @@ class MainWindow(QWidget):
             msg_to_show = "\n".join([str(v) for v in obj["infos"]])
         elif isinstance(obj, dict):
             msg_to_show = ", ".join([f"{k}: {v}" for k, v in obj.items()])
-        QMessageBox.critical(self, f"Erreur", f"L'étape '{step_name[3:]}' a échoué :\n{msg_to_show}")
+        
+        # Use QTimer to call QMessageBox in the main thread (thread-safe)
+        QTimer.singleShot(0, lambda: QMessageBox.critical(self, f"Erreur", f"L'étape '{step_name[3:]}' a échoué :\n{msg_to_show}"))
 
     def stop_test(self):
         """Stop the test thread and run the cleanup step if necessary."""

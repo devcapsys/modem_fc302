@@ -1,0 +1,24 @@
+# GUI Framework
+PyQt6>=6.0.0
+
+# Database connectivity
+mysql-connector-python>=8.0.0
+
+# PDF generation
+reportlab>=3.6.0
+
+# Serial communication
+pyserial>=3.5
+
+# VISA instrument control
+pyvisa>=1.13.0
+
+# Windows printing support
+pywin32>=305
+
+# Image processing and QR codes
+Pillow>=9.0.0
+qrcode>=7.4.0
+
+# Build tool
+pyinstaller>=5.0.0

@@ -20,6 +20,7 @@ a = Analysis(
     datas=[
         ('logo-big.png', '.'),
         ('steps', 'steps'),
+        ('modules', 'modules'),
         ('assets', 'assets'),
     ] + mysql_datas + reportlab_datas + serial_datas,
     hiddenimports=[
@@ -42,6 +43,18 @@ a = Analysis(
         'serial',
         'serial.tools',
         'serial.tools.list_ports',
+        
+        # VISA instrument control
+        'pyvisa',
+        
+        # Windows printing support
+        'win32ui',
+        'win32print',
+        
+        # Image processing and QR codes
+        'PIL',
+        'qrcode',
+        'qrcode.image.pil',
         
         # Configuration module
         'configuration',
