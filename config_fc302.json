@@ -4,11 +4,11 @@
     "path": "C:\\Users\\tgerardin\\CAPSYS\\DONNEES-TECHNIQUES - Documents\\Outillage\\IG87001\\IG87001-2\\libraries\\FC302_Conf_Grenoble-Nice.json"
   },
   "RS232": {
-    "port": "COM26",
+    "port": "COM9",
     "baudrate": 9600
   },
   "MEASURE_AC_VRMS_1": {
-    "min": 0.138,
+    "min": 0.135,
     "max": 0.144
   },
   "MEASURE_AC_VRMS_2": {

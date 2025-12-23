@@ -1,10 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 from PyInstaller.utils.hooks import collect_all
+import os
 
 # Collect data for required packages
 mysql_datas, mysql_binaries, mysql_hiddenimports = collect_all('mysql.connector')
 reportlab_datas, reportlab_binaries, reportlab_hiddenimports = collect_all('reportlab')
+
+# Add libmysql.dll manually
+libmysql_path = r'C:\Users\tgerardin\AppData\Roaming\Python\lib\site-packages\libmysql.dll'
+if os.path.exists(libmysql_path):
+    mysql_binaries.append((libmysql_path, '.'))
 
 a = Analysis(
     ['main.py'],
