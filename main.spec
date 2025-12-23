@@ -6,6 +6,7 @@ import os
 # Collect data for required packages
 mysql_datas, mysql_binaries, mysql_hiddenimports = collect_all('mysql.connector')
 reportlab_datas, reportlab_binaries, reportlab_hiddenimports = collect_all('reportlab')
+serial_datas, serial_binaries, serial_hiddenimports = collect_all('serial')
 
 # Add libmysql.dll manually
 libmysql_path = r'C:\Users\tgerardin\AppData\Roaming\Python\lib\site-packages\libmysql.dll'
@@ -15,12 +16,12 @@ if os.path.exists(libmysql_path):
 a = Analysis(
     ['main.py'],
     pathex=[],
-    binaries=[] + mysql_binaries + reportlab_binaries,
+    binaries=[] + mysql_binaries + reportlab_binaries + serial_binaries,
     datas=[
         ('logo-big.png', '.'),
         ('steps', 'steps'),
         ('assets', 'assets'),
-    ] + mysql_datas + reportlab_datas,
+    ] + mysql_datas + reportlab_datas + serial_datas,
     hiddenimports=[
         # PyQt6 modules
         'PyQt6.QtCore',
@@ -37,10 +38,15 @@ a = Analysis(
         'reportlab.lib.units',
         'reportlab.lib.colors',
         
+        # Serial communication
+        'serial',
+        'serial.tools',
+        'serial.tools.list_ports',
+        
         # Configuration module
         'configuration',
         
-    ] + mysql_hiddenimports + reportlab_hiddenimports,
+    ] + mysql_hiddenimports + reportlab_hiddenimports + serial_hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
