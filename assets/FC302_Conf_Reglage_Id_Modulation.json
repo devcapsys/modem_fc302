@@ -1,0 +1,166 @@
+{
+    "AudioWaveMode": "Sine",
+    "Channel": {
+        "1": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 40650000,
+            "SQLevelIndex": 2,
+            "ScanIndex": 1,
+            "TxFreq": 40650000,
+            "TxPowerIndex": 0
+        },
+        "10": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "11": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "12": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "13": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "14": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "15": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "16": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "2": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "3": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "4": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "5": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "6": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "7": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "8": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "9": {
+            "BandwidthIndex": 0,
+            "CTCSSDCSIndex": 0,
+            "RxFreq": 0,
+            "SQLevelIndex": 0,
+            "ScanIndex": 1,
+            "TxFreq": 0,
+            "TxPowerIndex": 0
+        },
+        "CtrlMode": "Progrem",
+        "Current": 1,
+        "SaveChannel": true
+    },
+    "ChannelScanModeIndex": 0,
+    "PowerSave": {
+        "Enable": false,
+        "SleepTime": 0,
+        "StandbyTime": 0
+    },
+    "SideTone": {
+        "Enable": false
+    },
+    "TxProtect": {
+        "StopTime": 255,
+        "Timeout": 60
+    },
+    "Volume": 0
+}

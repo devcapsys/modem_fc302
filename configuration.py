@@ -58,29 +58,13 @@ def request_user_input(config, title: str, message: str) -> Optional[str]:
         user_text = input(message + " ")
         return user_text if user_text else None
 
-class SerialUsbDut(SerialInstrumentManager):
-    def __init__(self, port=None, baudrate=115200, timeout=0.3, debug=False):
-        SerialInstrumentManager.__init__(self, port, baudrate, timeout, debug)
-        self._debug_log("DUT initialized")
-
-    def get_valid(self, sn=None) -> bool:
-        # self.send_command("AT+RESET", timeout=1) # Initialize communication
-        idn = self.send_command("AT+RESET\r", timeout=1) # Expecting "OK"
-        if not idn:
-            raise RuntimeError("Failed to get valid IDN response")
-        if idn == "OK":
-            self._debug_log(f"Device IDN: {idn}")
-            return True
-        else:
-            raise RuntimeError(f"Invalid device IDN: {idn}")
-    
-    def send_command_Cr(self, command: str, expected_response: str = "", exact_match: bool = False, timeout: float = 0, read_until: str = "") -> str:
-        return super().send_command(command + "\n", expected_response, exact_match, timeout, read_until)
-    
 class ConfigItems:
     """Container for all configuration items used in the test sequence."""
     key_map = {
+        "JSON_GRENOBLE_NICE": "json_grenoble_nice",
         "RS232": "rs232_dut",
+        "MEASURE_AC_VRMS_1": "measure_ac_vrms_1",
+        "MEASURE_AC_VRMS_2": "measure_ac_vrms_2",
     }
 
     def init_config_items(self, configJson):
@@ -95,8 +79,11 @@ class ConfigItems:
                 attr_name,
                 ConfigItems.ConfigItem(                
                     key=json_key,
+                    path=item.get("path", ""),
                     port=item.get("port", ""),
-                    baudrate=item.get("baudrate", "")
+                    baudrate=item.get("baudrate", ""),
+                    min=item.get("min", None),
+                    max=item.get("max", None)
                 )
             )
 
@@ -105,17 +92,26 @@ class ConfigItems:
         def __init__(
             self,
             key = "",
+            path: str = "",
             port: str = "",
             baudrate: str = "",
+            min: Optional[float] = None,
+            max: Optional[float] = None
         ):
             """Initialize a ConfigItem with optional parameters for test configuration."""
             self.key = key
+            self.path = path
             self.port = port
             self.baudrate = baudrate
+            self.min = min
+            self.max = max
     
     def __init__(self):
         """Initialize all ConfigItem attributes for different test parameters."""
+        self.json_grenoble_nice = self.ConfigItem()
         self.rs232_dut = self.ConfigItem()
+        self.measure_ac_vrms_1 = self.ConfigItem()
+        self.measure_ac_vrms_2 = self.ConfigItem()
 
 class Arg:
     name = NAME_GUI

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys, os
+import sys, os, json, time
 if __name__ == "__main__":
     BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
     if BASE_DIR not in sys.path:
@@ -21,28 +21,31 @@ def run_step(log, config: configuration.AppConfig, update_percentage=lambda x: N
     # We always save the name of the step in the db
     step_name_id = config.db.create("step_name", {"device_under_test_id": config.device_under_test_id, "step_name": step_name})
     ###################################################################
-    update_percentage(50) # Update to 50% (example)
-    # Logic here
-    # Request user input for hardware identification
-    serial_number = configuration.request_user_input(
-        config,
-        "Identification du matériel",
-        "Veuillez entrer le numéro de série du matériel :"
-    )
-    if serial_number is None:
-        return_msg["infos"].append("L'utilisateur a annulé la saisie.")
+
+    if config.modem_fc302_manager is None:
+        return_msg["infos"].append(f"config.modem_fc302_manager n'est pas initialisé.")
         return 1, return_msg
     
-    # Log the user input
-    log(f"Numéro de série saisi : {serial_number}", "blue")
-    config.save_value(step_name_id, "SERIAL_NUMBER", serial_number)
-    
-    #Example failure
-    return_msg["infos"].append("Exemple d'erreur détectée.")
-    return_msg["infos"].append("Exemple 2 d'erreur détectée.")
-    return 1, return_msg
+    config.modem_fc302_manager.send_command_Cr("AT+RESET")
+    time.sleep(5)  # Wait modem
+    update_percentage(50)
 
-    return 0, return_msg
+    config_file_path = config.configItems.json_grenoble_nice.path
+    if not os.path.exists(config_file_path):
+        return_msg = f"Le fichier de configuration '{config_file_path}' est introuvable."
+        return 1, return_msg
+    with open(config_file_path, "r", encoding="utf-8") as file:  # Open the configuration file
+        raw_data = file.read()
+        fixed_data = raw_data.replace("\\", "\\\\")  # Escape backslashes
+    try:
+        config_data = json.loads(fixed_data)  # Parse the JSON data
+    except json.JSONDecodeError as e:
+        return_msg = f"Erreur lors de l'analyse du fichier de configuration JSON : {e}"
+        return 1, return_msg
+
+    config.modem_fc302_manager.write_all_parameters(config_data)
+
+    return 0, "Étape OK"
 
 
 if __name__ == "__main__":

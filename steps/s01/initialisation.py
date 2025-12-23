@@ -166,7 +166,22 @@ def init_rs232_dut(config: configuration.AppConfig):
     
     config.modem_fc302_manager = ModemFc302Manager(baudrate=int(config.configItems.rs232_dut.baudrate), debug=config.arg.show_all_logs)
     config.modem_fc302_manager.open_with_port(port=config.configItems.rs232_dut.port)
-    
+    config_file_path = get_project_path("assets/FC302_Conf_Reglage_Id_Modulation.json")
+
+    if not os.path.exists(config_file_path):
+        return_msg = f"Le fichier de configuration '{config_file_path}' est introuvable."
+        return 1, return_msg
+    with open(config_file_path, "r", encoding="utf-8") as file:  # Open the configuration file
+        raw_data = file.read()
+        fixed_data = raw_data.replace("\\", "\\\\")  # Escape backslashes
+    try:
+        config_data = json.loads(fixed_data)  # Parse the JSON data
+    except json.JSONDecodeError as e:
+        return_msg = f"Erreur lors de l'analyse du fichier de configuration JSON : {e}"
+        return 1, return_msg
+
+    config.modem_fc302_manager.write_all_parameters(config_data)
+
     return_msg = f"Modèle: {config.modem_fc302_manager.model}, Firmware: {config.modem_fc302_manager.firmware_version}, Fréquence: {config.modem_fc302_manager.frequency_range}, S/N: {config.modem_fc302_manager.serial_number}, port: {config.modem_fc302_manager.port}, baudrate: {config.modem_fc302_manager.baudrate}"
     return 0, return_msg
 
@@ -176,8 +191,10 @@ def init_ds1104_rigol(config: configuration.AppConfig):
         return 1, "Erreur : config.db n'est pas initialisé."
     
     config.oscilloscope_rigol_manager = Ds1104RigolManager()
-    
+    config_file = get_project_path("assets/fc302_modulation.bin")
+    config.oscilloscope_rigol_manager.load_setup_from_file(config_file)
     return_msg = f"Modèle: {config.oscilloscope_rigol_manager.device_model}, S/N: {config.oscilloscope_rigol_manager.sn}, Software Version: {config.oscilloscope_rigol_manager.software_version}"
+
     return 0, return_msg
 
 def run_step(log, config: configuration.AppConfig, update_percentage=lambda x: None):
@@ -189,12 +206,16 @@ def run_step(log, config: configuration.AppConfig, update_percentage=lambda x: N
         return_msg["infos"].append(f"{step_name_id}")
         return status, return_msg
     
+    update_percentage(30)
+
     log("Initialisation de la connexion RS232 au DUT...", "cyan")
     status, msg = init_rs232_dut(config)
     if status != 0:
         return status, msg    
     log(msg, "blue")
     
+    update_percentage(60)
+
     log("Initialisation de la connexion DS1104 Rigol...", "cyan")
     status, msg = init_ds1104_rigol(config)
     if status != 0:
