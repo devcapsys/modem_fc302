@@ -1005,90 +1005,156 @@ class MainWindow(QWidget):
 
 def main():
     """Main function to initialize the application and start the GUI"""
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        handlers=[logging.StreamHandler()],
-    )
+    # Configure logging to file for debugging
+    log_file = os.path.join(tempfile.gettempdir(), "main.log")
+    
+    try:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            handlers=[
+                logging.StreamHandler(),
+                logging.FileHandler(log_file, mode='w', encoding='utf-8')
+            ],
+        )
+        logging.info(f"Démarrage de l'application - Log file: {log_file}")
+        
+        # Disable verbose logging from mysql.connector
+        logging.getLogger('mysql.connector').setLevel(logging.WARNING)
+        
+        # Redirect stdout/stderr if they are None (windowed mode)
+        if sys.stdout is None:
+            sys.stdout = open(os.path.join(tempfile.gettempdir(), "main_stdout.log"), 'w', encoding='utf-8')
+        if sys.stderr is None:
+            sys.stderr = open(os.path.join(tempfile.gettempdir(), "main_stderr.log"), 'w', encoding='utf-8')
 
-    # This helps with PyInstaller and multiprocessing issues
-    import multiprocessing
-    multiprocessing.freeze_support()
-    
-    global config  # Declare config as global
-    
-    if os.name == "nt" and sys.stdout is not None:
-        sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+        # This helps with PyInstaller and multiprocessing issues
+        import multiprocessing
+        multiprocessing.freeze_support()
+        
+        global config  # Declare config as global
+        
+        if os.name == "nt" and sys.stdout is not None:
+            sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
 
-    """Set up the database"""
-    if len(sys.argv) < 12:
-        print("Aucun argument fourni, utilisation des paramètres par défaut pour le débogage.")
-        # config.arg.operator = "Thomas GERARDIN"
-        # config.arg.commande = "1"
-        # config.arg.of = "1"
-        # config.arg.article = "radar"
-        # config.arg.indice = "1"
-        config.arg.product_list_id = configuration.PRODUCT_LIST_ID_DEFAULT
-        # config.arg.user = "root"
-        # config.arg.password = "root"
-        # config.arg.host = "127.0.0.1"
-        # config.arg.port = "3306"
-        # config.arg.database = "capsys_db_bdt"
-    else:
-        print("Arguments fournis, utilisation des paramètres de la ligne de commande.")
-        config.arg.operator = sys.argv[1]
-        config.arg.commande = sys.argv[2]
-        config.arg.of = sys.argv[3]
-        config.arg.article = sys.argv[4]
-        config.arg.indice = sys.argv[5]
-        config.arg.product_list_id = sys.argv[6]
-        config.arg.user = sys.argv[7]
-        config.arg.password = sys.argv[8]
-        config.arg.host = sys.argv[9]
-        config.arg.port = sys.argv[10]
-        config.arg.database = sys.argv[11]
+        """Set up the database"""
+        if len(sys.argv) < 12:
+            print("Aucun argument fourni, utilisation des paramètres par défaut pour le débogage.")
+            logging.info("Aucun argument fourni, utilisation des paramètres par défaut pour le débogage.")
+            # config.arg.operator = "Thomas GERARDIN"
+            # config.arg.commande = "1"
+            # config.arg.of = "1"
+            # config.arg.article = "radar"
+            # config.arg.indice = "1"
+            config.arg.product_list_id = configuration.PRODUCT_LIST_ID_DEFAULT
+            # config.arg.user = "root"
+            # config.arg.password = "root"
+            # config.arg.host = "127.0.0.1"
+            # config.arg.port = "3306"
+            # config.arg.database = "capsys_db_bdt"
+        else:
+            print("Arguments fournis, utilisation des paramètres de la ligne de commande.")
+            logging.info("Arguments fournis, utilisation des paramètres de la ligne de commande.")
+            config.arg.operator = sys.argv[1]
+            config.arg.commande = sys.argv[2]
+            config.arg.of = sys.argv[3]
+            config.arg.article = sys.argv[4]
+            config.arg.indice = sys.argv[5]
+            config.arg.product_list_id = sys.argv[6]
+            config.arg.user = sys.argv[7]
+            config.arg.password = sys.argv[8]
+            config.arg.host = sys.argv[9]
+            config.arg.port = sys.argv[10]
+            config.arg.database = sys.argv[11]
 
-    # Establish database connection
-    config.db_config = DatabaseConfig(
-        user=config.arg.user,
-        password=config.arg.password,
-        host=config.arg.host,
-        port=int(config.arg.port),
-        database=config.arg.database,
-    )
-    config.db = GenericDatabaseManager(config.db_config, debug=config.arg.show_all_logs)
-    config.db.connect()
-    
-    """Launch the GUI"""
-    app = QApplication(sys.argv)
-    
-    # Define application style with a modern dark theme
-    app.setStyle('Fusion')
-    
-    # Set a modern dark palette
-    from PyQt6.QtGui import QPalette, QColor
-    
-    dark_palette = QPalette()
-    dark_palette.setColor(QPalette.ColorRole.Window, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ColorRole.WindowText, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.Base, QColor(25, 25, 25))
-    dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(0, 0, 0))
-    dark_palette.setColor(QPalette.ColorRole.ToolTipText, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.Text, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ColorRole.ButtonText, QColor(255, 255, 255))
-    dark_palette.setColor(QPalette.ColorRole.BrightText, QColor(255, 0, 0))
-    dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-    dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-    dark_palette.setColor(QPalette.ColorRole.HighlightedText, QColor(0, 0, 0))
-    
-    app.setPalette(dark_palette)
-    
-
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+        logging.info("Configuration des paramètres DB...")
+        # Establish database connection
+        config.db_config = DatabaseConfig(
+            user=config.arg.user,
+            password=config.arg.password,
+            host=config.arg.host,
+            port=int(config.arg.port),
+            database=config.arg.database,
+        )
+        logging.info(f"DB Config créée: {config.arg.user}@{config.arg.host}:{config.arg.port}/{config.arg.database}")
+        config.db = GenericDatabaseManager(config.db_config, debug=config.arg.show_all_logs)
+        logging.info("GenericDatabaseManager créé")
+        
+        logging.info(f"Tentative de connexion à la base de données {config.arg.database}...")
+        if sys.stdout:
+            sys.stdout.flush()  # Force flush
+        
+        try:
+            config.db.connect()
+            logging.info("Connexion à la base de données réussie!")
+        except ConnectionError as ce:
+            logging.error(f"Erreur de connexion: {ce}")
+            raise
+        except Exception as e:
+            logging.error(f"Erreur inattendue lors de la connexion: {type(e).__name__}: {e}")
+            raise
+            
+        if sys.stdout:
+            sys.stdout.flush()  # Force flush
+        
+        """Launch the GUI"""
+        logging.info("Lancement de l'interface graphique...")
+        app = QApplication(sys.argv)
+        
+        # Define application style with a modern dark theme
+        app.setStyle('Fusion')
+        
+        # Set a modern dark palette
+        from PyQt6.QtGui import QPalette, QColor
+        
+        dark_palette = QPalette()
+        dark_palette.setColor(QPalette.ColorRole.Window, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.ColorRole.WindowText, QColor(255, 255, 255))
+        dark_palette.setColor(QPalette.ColorRole.Base, QColor(25, 25, 25))
+        dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(0, 0, 0))
+        dark_palette.setColor(QPalette.ColorRole.ToolTipText, QColor(255, 255, 255))
+        dark_palette.setColor(QPalette.ColorRole.Text, QColor(255, 255, 255))
+        dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.ColorRole.ButtonText, QColor(255, 255, 255))
+        dark_palette.setColor(QPalette.ColorRole.BrightText, QColor(255, 0, 0))
+        dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
+        dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
+        dark_palette.setColor(QPalette.ColorRole.HighlightedText, QColor(0, 0, 0))
+        
+        app.setPalette(dark_palette)
+        
+        logging.info("Création de la fenêtre principale...")
+        window = MainWindow()
+        window.show()
+        logging.info("Fenêtre affichée, démarrage de la boucle d'événements...")
+        sys.exit(app.exec())
+        
+    except Exception as e:
+        error_msg = f"ERREUR FATALE dans main(): {e}"
+        logging.exception(error_msg)
+        print(error_msg)
+        if sys.stdout:
+            sys.stdout.flush()
+        
+        # Write full traceback to log file
+        with open(log_file, 'a', encoding='utf-8') as f:
+            import traceback
+            f.write("\n\n=== EXCEPTION FATALE ===\n")
+            f.write(f"Type: {type(e).__name__}\n")
+            f.write(f"Message: {str(e)}\n")
+            f.write(traceback.format_exc())
+            f.flush()
+        
+        # Show error in message box if possible
+        try:
+            app_instance = QApplication.instance()
+            if app_instance is None:
+                app_instance = QApplication(sys.argv)
+            QMessageBox.critical(None, "Erreur fatale", f"Une erreur s'est produite:\n{str(e)}\n\nVoir le log: {log_file}")
+        except Exception as e2:
+            print(f"Impossible d'afficher la boîte de dialogue: {e2}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
