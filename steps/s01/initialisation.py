@@ -155,7 +155,7 @@ def init_database_and_checks(log, config: configuration.AppConfig, update_percen
 
     config.save_value(step_name_id, "VERSION", VERSION)
     config.save_value(step_name_id, "data_used_for_test", json.dumps(data, indent=4, ensure_ascii=False, default=str))
-    config.save_value(step_name_id, "id_fichier_config", id)
+    config.save_value(step_name_id, "id_fichier_config", str(id))
 
     return 0, step_name_id
 
