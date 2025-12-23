@@ -8,7 +8,7 @@
     "baudrate": 9600
   },
   "MEASURE_AC_VRMS_1": {
-    "min": 0.135,
+    "min": 0.138,
     "max": 0.144
   },
   "MEASURE_AC_VRMS_2": {
