@@ -12,13 +12,6 @@ a = Analysis(
     binaries=[] + mysql_binaries + reportlab_binaries,
     datas=[
         ('logo-big.png', '.'),
-        ('steps', 'steps'),
-        ('modules/capsys_daq_manager', 'modules/capsys_daq_manager'),
-        ('modules/capsys_mcp23017', 'modules/capsys_mcp23017'),
-        ('modules/capsys_mysql_command', 'modules/capsys_mysql_command'),
-        ('modules/capsys_pdf_report', 'modules/capsys_pdf_report'),
-        ('modules/capsys_serial_instrument_manager', 'modules/capsys_serial_instrument_manager'),
-        ('modules/capsys_wrapper_tm_t20iii', 'modules/capsys_wrapper_tm_t20iii')
     ] + mysql_datas + reportlab_datas,
     hiddenimports=[
         # PyQt6 modules
@@ -36,35 +29,14 @@ a = Analysis(
         'reportlab.lib.units',
         'reportlab.lib.colors',
         
-        # Custom modules
-        'modules.capsys_daq_manager',
-        'modules.capsys_mcp23017',
-        'modules.capsys_mcp23017.modules.capsys_bitbangi2c',
-        'modules.capsys_mcp23017.modules.capsys_bitbangi2c.modules.capsys_daq_manager',
-        'modules.capsys_mcp23017.modules.capsys_daq_manager',
-        'modules.capsys_mysql_command.capsys_mysql_command',
-        'modules.capsys_pdf_report.capsys_pdf_report',
-        'modules.capsys_pdf_report.modules.capsys_mysql_command.capsys_mysql_command',
-        'modules.capsys_serial_instrument_manager',
-        'modules.capsys_wrapper_tm_t20iii',
-        
         # Configuration module
         'configuration',
-        
-        # Step modules (dynamically loaded)
-        'steps.s01.initialisation',
-        # Add others steps
-        'steps.zz.fin_du_test',
         'unittest.mock',
     ] + mysql_hiddenimports + reportlab_hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[
-        'modules.capsys_daq_manager',
-        'modules.capsys_mcp23017', 
-        'modules.capsys_alim_ka3005p',
-    ],
+    excludes=[],
     noarchive=False,
     optimize=0,
 )
