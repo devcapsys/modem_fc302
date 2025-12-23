@@ -12,6 +12,7 @@ a = Analysis(
     binaries=[] + mysql_binaries + reportlab_binaries,
     datas=[
         ('logo-big.png', '.'),
+        ('steps', 'steps'),
     ] + mysql_datas + reportlab_datas,
     hiddenimports=[
         # PyQt6 modules
@@ -31,7 +32,7 @@ a = Analysis(
         
         # Configuration module
         'configuration',
-        'unittest.mock',
+        
     ] + mysql_hiddenimports + reportlab_hiddenimports,
     hookspath=[],
     hooksconfig={},
