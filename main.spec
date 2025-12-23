@@ -13,6 +13,7 @@ a = Analysis(
     datas=[
         ('logo-big.png', '.'),
         ('steps', 'steps'),
+        ('assets', 'assets'),
     ] + mysql_datas + reportlab_datas,
     hiddenimports=[
         # PyQt6 modules
